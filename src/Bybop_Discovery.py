@@ -5,8 +5,18 @@ import socket
 import threading
 
 class DeviceID(object):
+    """ WLAN Devices """
     BEBOP_DRONE = '0901'
     JUMPING_SUMO = '0902'
+    SKY_CONTROLLER = '0903'
+    JUMPING_NIGHT = '0905'
+    JUMPING_RACE = '0906'
+
+    """ BLE Devices """
+    ROLLING_SPIDER = '0900'
+    AIRBORNE_NIGHT = '0907'
+    AIRBORNE_CARGO = '0909'
+    HYDROFOIL = '090a'
 
 class Discovery(object):
     """

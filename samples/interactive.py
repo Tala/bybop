@@ -4,10 +4,11 @@ import sys
 import os
 
 import code
-import readline
+import pyreadline
 import rlcompleter
 
-sys.path.append('../src')
+lib_path = os.path.abspath(os.path.join('..', 'src'))
+sys.path.append(lib_path)
 
 from Bybop_Discovery import *
 import Bybop_Device
