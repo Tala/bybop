@@ -15,7 +15,7 @@ import Bybop_Device
 
 print 'Searching for devices'
 
-discovery = Discovery([DeviceID.BEBOP_DRONE, DeviceID.JUMPING_SUMO])
+discovery = Discovery([DeviceID.BEBOP_DRONE, DeviceID.JUMPING_SUMO, DeviceID.AIRBORNE_NIGHT, DeviceID.JUMPING_NIGHT])
 
 discovery.wait_for_change()
 
@@ -31,7 +31,7 @@ device = devices.itervalues().next()
 
 print 'Will connect to ' + get_name(device)
 
-d2c_port = 54321
+d2c_port = 43210
 controller_type = "PC"
 controller_name = "bybop shell"
 
@@ -43,12 +43,12 @@ if drone is None:
 
 drone.dump_state()
 
-vars = globals().copy()
-vars.update(locals())
-readline.set_completer(rlcompleter.Completer(vars).complete)
-readline.parse_and_bind("tab: complete")
-shell = code.InteractiveConsole(vars)
-
-shell.interact()
-
-drone.stop()
+# vars = globals().copy()
+# vars.update(locals())
+# pyreadline.set_completer(rlcompleter.Completer(vars).complete)
+# pyreadline.parse_and_bind("tab: complete")
+# shell = code.InteractiveConsole(vars)
+#
+# shell.interact()
+#
+# drone.stop()

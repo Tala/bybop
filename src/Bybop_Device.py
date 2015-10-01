@@ -365,13 +365,21 @@ class Device(object):
     def _common_init_product(self):
         self.send_data('common', 'Settings', 'AllSettings', toto=42)
         self.wait_answer('common.SettingsState.AllSettingsChanged')
+
+        print 'first answer correct'
+
         self.send_data('common', 'Common', 'AllStates')
         self.wait_answer('common.CommonState.AllStatesChanged')
+
+        print 'second answer correct'
+
         now = time.gmtime()
         dateStr = time.strftime('%Y-%m-%d', now)
         timeStr = time.strftime('T%H%M%S+0000', now)
         self.send_data('common', 'Common', 'CurrentDate', dateStr)
         self.send_data('common', 'Common', 'CurrentTime', timeStr)
+
+        print 'Dates send'
 
     def dump_state(self):
         print 'Internal state :'
@@ -474,13 +482,70 @@ class JumpingSumo(Device):
         - 1 : high
         """
         return self.send_data('JumpingSumo', 'Animations', 'Jump', jump_type)
-        
+
+
+class JumpingNight(Device):
+    def __init__(self, ip, c2d_port, d2c_port):
+        """
+        Create and start a new JumpingSumo device.
+
+        The connection must have been started beforehand by Connection.connect().
+
+        Arguments:
+        - ip : The product ip address
+        - c2d_port : The remote port (on which we will send data)
+        - d2c_port : The local port (on which we will read data)
+        """
+        super(JumpingNight, self).__init__(ip, c2d_port, d2c_port, ackBuffer=11, nackBuffer=10, cmdBuffers=[127, 126])
+
+    def _init_product(self):
+        # Deactivate video streaming
+        self.send_data('JumpingNight', 'MediaStreaming', 'VideoEnable', 0)
+
+    def change_posture(self, posture):
+        """
+        Change the posture of the JumpingSumo.
+
+        Arguments:
+        - posture : integer value corresponding to the posture requested
+
+        Possible values are found in the ARCommands xml file (0 then grows)
+        Currently known values:
+        - 0 : standing
+        - 1 : jumper
+        - 2 : kicker
+        """
+        return self.send_data('JumpingNight', 'Piloting', 'Posture', posture)
+
+    def change_volume(self, volume):
+        """
+        Change the volume of the JumpingSumo.
+
+        Arguments:
+        - volume : integer value [0; 100] : percentage of maximum volume.
+        """
+        return self.send_data('JumpingNight', 'AudioSettings', 'MasterVolume', volume)
+
+    def jump(self, jump_type):
+        """
+        Make the JumpingSumo jump.
+
+        Arguments:
+        - jump_type : integer value corresponding to the type of jump requested
+
+        Possible values are found in the ARCommands xml file (0 then grows)
+        Currently known values:
+        - 0 : long
+        - 1 : high
+        """
+        return self.send_data('JumpingNight', 'Animations', 'Jump', jump_type)
+
 
 def create_and_connect(device, d2c_port, controller_type, controller_name):
     device_id = get_device_id(device)
     ip = get_ip(device)
     port = get_port(device)
-    if device_id not in (DeviceID.BEBOP_DRONE, DeviceID.JUMPING_SUMO):
+    if device_id not in (DeviceID.BEBOP_DRONE, DeviceID.JUMPING_SUMO, DeviceID.JUMPING_NIGHT, DeviceID.AIRBORNE_NIGHT):
         print 'Unknown product ' + device_id
         return None
 
@@ -499,4 +564,6 @@ def create_and_connect(device, d2c_port, controller_type, controller_name):
         return BebopDrone(ip, c2d_port, d2c_port)
     elif device_id == DeviceID.JUMPING_SUMO:
         return JumpingSumo(ip, c2d_port, d2c_port)
+    elif device_id == DeviceID.JUMPING_NIGHT:
+        return JumpingNight(ip, c2d_port, d2c_port)
     return None

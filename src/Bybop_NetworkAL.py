@@ -103,6 +103,7 @@ class NetworkAL(object):
             try:
                 sock_data, _ = self._recv_sock.recvfrom(66000)
             except Exception as e:
+                # print 'Bybop_NetworkAL: ' + e.message
                 break
 
             the_data = sock_data
