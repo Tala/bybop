@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
 import sys
+import readline
 import os
 
 import code
-import pyreadline
 import rlcompleter
 
 lib_path = os.path.abspath(os.path.join('..', 'src'))
+sys.path.append(lib_path)
+
+lib_path = os.path.abspath(os.path.join('..', '..', 'ARSDKBuildUtils', 'Utils', 'Python'))
 sys.path.append(lib_path)
 
 from Bybop_Discovery import *
@@ -21,7 +24,7 @@ discovery.wait_for_change()
 
 devices = discovery.get_devices()
 
-discovery.stop()
+#discovery.stop()
 
 if not devices:
     print 'Oops ...'
@@ -43,12 +46,12 @@ if drone is None:
 
 drone.dump_state()
 
-# vars = globals().copy()
-# vars.update(locals())
-# pyreadline.set_completer(rlcompleter.Completer(vars).complete)
-# pyreadline.parse_and_bind("tab: complete")
-# shell = code.InteractiveConsole(vars)
-#
-# shell.interact()
-#
-# drone.stop()
+vars = globals().copy()
+vars.update(locals())
+readline.set_completer(rlcompleter.Completer(vars).complete)
+readline.parse_and_bind("tab: complete")
+shell = code.InteractiveConsole(vars)
+
+shell.interact()
+
+drone.stop()
