@@ -16,7 +16,7 @@ import struct
 # pickling the _projects variable is not a good way to do this, as we would still need the class
 # descriptions found in the ARCommandsParser module, we will have to define our own!
 
-os.environ['ARSDK_PATH'] = '/Users/laladytala/Programming/Drones/'
+os.environ['ARSDK_PATH'] = 'D:\Repositories\Drones'
 
 try:
     ARSDK_PATH=os.environ['ARSDK_PATH']

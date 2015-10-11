@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
 import sys
-import readline
+try:
+    import readline
+except ImportError:
+    import pyreadline as readline
 import os
 
 import code
@@ -45,6 +48,9 @@ if drone is None:
     sys.exit(1)
 
 drone.dump_state()
+
+# drone.simpleAnimation(2)
+# drone.move_forward(50)
 
 vars = globals().copy()
 vars.update(locals())
