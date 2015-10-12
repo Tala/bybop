@@ -36,11 +36,11 @@ discovery.wait_for_change()
 
 devices = discovery.get_devices()
 
-#discovery.stop()
+# discovery.stop()
 
 if not devices:
-    print 'Oops ...'
-    sys.exit(1)
+ print 'Oops ...'
+ sys.exit(1)
 
 device = devices.itervalues().next()
 
@@ -53,8 +53,8 @@ controller_name = "bybop shell"
 drone = Bybop_Device.create_and_connect(device, d2c_port, controller_type, controller_name)
 
 if drone is None:
-    print 'Unable to connect to a product'
-    sys.exit(1)
+ print 'Unable to connect to a product'
+ sys.exit(1)
 
 drone.dump_state()
 
@@ -64,28 +64,30 @@ _kinect = PyKinectRuntime.PyKinectRuntime(PyKinectV2.FrameSourceTypes_Body)
 # here we will store skeleton data
 _bodies = None
 _shouldRun = True
+_framecounter = 0
 
 while _shouldRun:
     # --- Cool! We have a body frame, so can get skeletons
     if _kinect.has_new_body_frame():
         _bodies = _kinect.get_last_body_frame()
-
         # --- draw skeletons to _frame_surface
         if _bodies is not None:
-            for i in range(0, _kinect.max_body_count):
-                body = _bodies.bodies[i]
-                if not body.is_tracked:
-                    continue
+            _framecounter += 1
+            if _framecounter % 120 == 0:
+                for i in range(0, _kinect.max_body_count):
+                    body = _bodies.bodies[i]
+                    if not body.is_tracked:
+                        continue
 
-                if SpinGesture.check(body):
-                    drone.simpleAnimation(2)
+                    if SpinGesture.check(body):
+                        drone.simpleAnimation(2)
 
-                if StopGesture.check(body):
-                    _shouldRun = False
+                    if MoveGesture.check(body):
+                        drone.move_forward(20)
 
-                joints = body.joints
-                # convert joint coordinates to color space
-                joint_points = _kinect.body_joints_to_color_space(joints)
+                    joints = body.joints
+                    # convert joint coordinates to color space
+                    joint_points = _kinect.body_joints_to_color_space(joints)
 
 # Close our Kinect sensor, close the window and quit.
 _kinect.close()

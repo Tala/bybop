@@ -18,7 +18,7 @@ class SpinGesture(KinectGestures):
         # TODO
 
     @staticmethod
-    def check(self, body):
+    def check(body):
         # values for enumeration '_HandState'
         # HandState_Unknown = 0
         # HandState_NotTracked = 1
@@ -26,16 +26,16 @@ class SpinGesture(KinectGestures):
         # HandState_Closed = 3
         # HandState_Lasso = 4
 
-        if body.HandLeftConfidence == 4 & body.HandRightConfidence == 4:
+        if body.hand_left_state == 4 & body.hand_right_state == 4:
             return True
 
         return False
 
 
-class StopGesture(KinectGestures):
+class MoveGesture(KinectGestures):
 
     @staticmethod
-    def check(self, body):
+    def check(body):
         # values for enumeration '_HandState'
         # HandState_Unknown = 0
         # HandState_NotTracked = 1
@@ -43,7 +43,7 @@ class StopGesture(KinectGestures):
         # HandState_Closed = 3
         # HandState_Lasso = 4
 
-        if body.HandLeftConfidence == 3 & body.HandRightConfidence == 3:
+        if body.hand_left_state == 3 & body.hand_right_state == 3:
             return True
 
         return False
