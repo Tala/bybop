@@ -4,6 +4,7 @@ from pykinect2 import PyKinectV2
 from pykinect2.PyKinectV2 import *
 from pykinect2 import PyKinectRuntime
 import ctypes
+import time
 import _ctypes
 from Kinect_Gestures import *
 
@@ -72,22 +73,27 @@ while _shouldRun:
         _bodies = _kinect.get_last_body_frame()
         # --- draw skeletons to _frame_surface
         if _bodies is not None:
-            _framecounter += 1
-            if _framecounter % 120 == 0:
-                for i in range(0, _kinect.max_body_count):
-                    body = _bodies.bodies[i]
-                    if not body.is_tracked:
-                        continue
+            for i in range(0, _kinect.max_body_count):
+                body = _bodies.bodies[i]
+                if not body.is_tracked:
+                    continue
 
-                    if SpinGesture.check(body):
-                        drone.simpleAnimation(2)
+                # if SpinGesture.check(body):
+                    # drone.simpleAnimation(2)
+                if MoveGesture.check(body):
+                    rotationAngle = 0
+                    maxDistance = min(body.joints[PyKinectV2.JointType_HandRight].Position.z,body.joints[PyKinectV2.JointType_HandRight].Position.z)
+                    distanceToHip = body.joints[PyKinectV2.JointType_SpineBase].Position.z - maxDistance
+                    speed = (distanceToHip - 0.2)*100
+                    if RotationGesture.check(body):
+                        rotationAngle = (body.joints[PyKinectV2.JointType_HandRight].Position.z - body.joints[PyKinectV2.JointType_HandLeft].Position.z) * 100
+                        rotationAngle /= 2
 
-                    if MoveGesture.check(body):
-                        drone.move_forward(20)
-
-                    joints = body.joints
-                    # convert joint coordinates to color space
-                    joint_points = _kinect.body_joints_to_color_space(joints)
+                    print('frame:' , _framecounter)
+                    print('maxDistance: ' , maxDistance , 'distanceToHip: ' , distanceToHip , ' speed: ' , speed , '  angle:' , rotationAngle)
+                    drone.move(speed,rotationAngle)
+        _bodies = None
+        time.sleep(0.5)
 
 # Close our Kinect sensor, close the window and quit.
 _kinect.close()

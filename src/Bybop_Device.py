@@ -463,6 +463,9 @@ class JumpingSumo(Device):
     def move_forward(self, speed):
         return self.send_data('JumpingSumo', 'Piloting', 'PCMD', 1, speed, 0)
 
+    def move(self, speed, angle):
+        return self.send_data('JumpingSumo', 'Piloting', 'PCMD', 1, speed, angle)
+
     def spin(self):
         return self.send_data('JumpingSumo', 'Animations', 'SimpleAnimation', 1 )
 

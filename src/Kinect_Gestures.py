@@ -48,3 +48,10 @@ class MoveGesture(KinectGestures):
 
         return False
 
+class RotationGesture(KinectGestures):
+
+    @staticmethod
+    def check(body):
+        if abs(body.joints[PyKinectV2.JointType_HandRight].Position.z - body.joints[PyKinectV2.JointType_HandLeft].Position.z) > 0.1:
+            return True
+        return False
