@@ -67,6 +67,9 @@ _bodies = None
 _shouldRun = True
 _framecounter = 0
 
+IsInteractionShellOpen =False
+
+
 while _shouldRun:
     # --- Cool! We have a body frame, so can get skeletons
     if _kinect.has_new_body_frame():
@@ -78,13 +81,23 @@ while _shouldRun:
                 if not body.is_tracked:
                     continue
 
-                # if SpinGesture.check(body):
-                    # drone.simpleAnimation(2)
+                if SpinGesture.check(body):
+                    drone.simpleAnimation(1)
+                    time.sleep(1)
+
+                if JumpGesture.check(body):
+                    drone.jump(0)
+                    time.sleep(1)
+
                 if MoveGesture.check(body):
                     rotationAngle = 0
                     maxDistance = min(body.joints[PyKinectV2.JointType_HandRight].Position.z,body.joints[PyKinectV2.JointType_HandRight].Position.z)
                     distanceToHip = body.joints[PyKinectV2.JointType_SpineBase].Position.z - maxDistance
                     speed = (distanceToHip - 0.2)*100
+                    speed *= 2
+                    if (speed < 0):
+                        speed *=3;
+
                     if RotationGesture.check(body):
                         rotationAngle = (body.joints[PyKinectV2.JointType_HandRight].Position.z - body.joints[PyKinectV2.JointType_HandLeft].Position.z) * 100
                         rotationAngle /= 2
@@ -93,7 +106,7 @@ while _shouldRun:
                     print('maxDistance: ' , maxDistance , 'distanceToHip: ' , distanceToHip , ' speed: ' , speed , '  angle:' , rotationAngle)
                     drone.move(speed,rotationAngle)
         _bodies = None
-        time.sleep(0.5)
+        time.sleep(0.2)
 
 # Close our Kinect sensor, close the window and quit.
 _kinect.close()

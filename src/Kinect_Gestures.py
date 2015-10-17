@@ -55,3 +55,13 @@ class RotationGesture(KinectGestures):
         if abs(body.joints[PyKinectV2.JointType_HandRight].Position.z - body.joints[PyKinectV2.JointType_HandLeft].Position.z) > 0.1:
             return True
         return False
+
+
+class JumpGesture(KinectGestures):
+
+    @staticmethod
+    def check(body):
+        if (body.joints[PyKinectV2.JointType_HandRight].Position.y > body.joints[PyKinectV2.JointType_Head].Position.y) & \
+                (body.joints[PyKinectV2.JointType_HandLeft].Position.y > body.joints[PyKinectV2.JointType_Head].Position.y):
+            return True
+        return False
