@@ -89,6 +89,10 @@ while _shouldRun:
                     drone.jump(0)
                     time.sleep(1)
 
+                if SingleLegGesture.check(body):
+                    drone.simpleAnimation(7)
+                    time.sleep(1)
+
                 if MoveGesture.check(body):
                     rotationAngle = 0
                     maxDistance = min(body.joints[PyKinectV2.JointType_HandRight].Position.z,body.joints[PyKinectV2.JointType_HandRight].Position.z)

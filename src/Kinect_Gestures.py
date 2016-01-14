@@ -65,3 +65,11 @@ class JumpGesture(KinectGestures):
                 (body.joints[PyKinectV2.JointType_HandLeft].Position.y > body.joints[PyKinectV2.JointType_Head].Position.y):
             return True
         return False
+
+class SingleLegGesture(KinectGestures):
+
+    @staticmethod
+    def check(body):
+        if (body.joints[PyKinectV2.JointType_FootRight].Position.y > (body.joints[PyKinectV2.JointType_FootLeft].Position.y) +0.3):
+            return True
+        return False

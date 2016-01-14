@@ -49,15 +49,33 @@ if drone is None:
 
 drone.dump_state()
 
-# drone.simpleAnimation(2)
-# drone.move_forward(50)
-
 vars = globals().copy()
 vars.update(locals())
 readline.set_completer(rlcompleter.Completer(vars).complete)
 readline.parse_and_bind("tab: complete")
 shell = code.InteractiveConsole(vars)
 
-shell.interact()
+# drone.jump(0)  # jump forward
+# drone.jump(1)  # jump up
+# drone.move_forward(20)  # move forwards
+# drone.move_forward(-20)  # move backwards
+# drone.move(0,50)  # turn right?
+# drone.move(0,-50)  # turn left?
+# drone.spin() # spin around
+# drone.simpleAnimation(0)
+# drone.simpleAnimation(9)
+# Currently known values:
+#         - 0 : stop
+#         - 1 : spin
+#         - 2 : tap
+#         - 3 : slowshake
+#         - 4 : metronome
+#         - 5 : ondulation
+#         - 6 : spinjump
+#         - 7 : spintoposture
+#         - 8 : spiral
+#         - 9 : slalom
+#         """
 
+shell.interact()
 drone.stop()
