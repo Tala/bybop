@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{80ac87c6-e0a5-45df-bc1c-24da605fdacf}</ProjectGuid>
     <ProjectHome />
-    <StartupFile />
+    <StartupFile>sampleCodeAndSnippets.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -21,6 +21,12 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="sampleCodeAndSnippets.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\pyBob_DiscoveryBLE.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\Bybop_Commands.py" />
     <Compile Include="src\Bybop_Connection.py" />
     <Compile Include="src\Bybop_Device.py" />

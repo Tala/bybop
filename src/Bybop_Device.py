@@ -268,7 +268,7 @@ class Device(object):
 
         The application should not call this function directly.
         """
-        print 'Product disconnected !'
+        print('Product disconnected !')
         self.stop()
 
     def get_state(self, copy=True):
@@ -317,7 +317,7 @@ class Device(object):
         try:
             cmd, buf, to = pack_command(pr, cl, cm, *args)
         except CommandError:
-            print 'Bad command !'
+            print('Bad command !')
             return NetworkStatus.ERROR
         bufno=-1
         if buf == ARCommandBuffer.NON_ACK:
@@ -331,7 +331,7 @@ class Device(object):
             datatype = Bybop_NetworkAL.DataType.DATA_LOW_LATENCY
 
         if bufno == -1:
-            print 'No suitable buffer'
+            print('No suitable buffer')
             return NetworkStatus.ERROR
 
         retries = kwargs['retries'] if 'retries' in kwargs else 5
@@ -366,12 +366,12 @@ class Device(object):
         self.send_data('common', 'Settings', 'AllSettings', toto=42)
         self.wait_answer('common.SettingsState.AllSettingsChanged')
 
-        print 'first answer correct'
+        print( 'first answer correct')
 
         self.send_data('common', 'Common', 'AllStates')
         self.wait_answer('common.CommonState.AllStatesChanged')
 
-        print 'second answer correct'
+        print( 'second answer correct')
 
         now = time.gmtime()
         dateStr = time.strftime('%Y-%m-%d', now)
@@ -379,10 +379,10 @@ class Device(object):
         self.send_data('common', 'Common', 'CurrentDate', dateStr)
         self.send_data('common', 'Common', 'CurrentTime', timeStr)
 
-        print 'Dates send'
+        print( 'Dates send')
 
     def dump_state(self):
-        print 'Internal state :'
+        print( 'Internal state :')
         self._state.dump()
 
     def stop(self):
@@ -486,7 +486,6 @@ class JumpingSumo(Device):
         """
         return self.send_data('JumpingSumo', 'Animations', 'SimpleAnimation', id )
 
-
     def change_volume(self, volume):
         """
         Change the volume of the JumpingSumo.
@@ -510,21 +509,222 @@ class JumpingSumo(Device):
         """
         return self.send_data('JumpingSumo', 'Animations', 'Jump', jump_type)
 
+
+class Airborn(object):
+    def __init__(self):
+        """
+        Create and start a new JumpingSumo device.
+
+        The connection must have been started beforehand by Connection.connect().
+
+        Arguments:
+        - ip : The product ip address
+        - c2d_port : The remote port (on which we will send data)
+        - d2c_port : The local port (on which we will read data)
+        """
+        inb = [i for i in (11, 10, -1) if i > 0]
+        outb = [127, 126]
+        #self._network = Network(ip, c2d_port, d2c_port, inb, outb, self)
+        self._ackBuffer = 11
+        self._nackBuffer = 10
+        self._urgBuffer = -1
+        self._cmdBuffers = [127, 126]
+        self._state = State()
+        #super(Airborn, self).__init__(ip, c2d_port, d2c_port, ackBuffer=11, nackBuffer=10, cmdBuffers=[127, 126])
+
+    def flip(self, direction):
+        """
+        Change the posture of the JumpingSumo.
+
+        Arguments:
+        - posture : integer value corresponding to the posture requested
+
+        Possible values are found in the ARCommands xml file (0 then grows)
+        Currently known values:
+        - 0 : front
+        - 1 : back
+        - 2 : right
+        - 3 : left
+        """
+        return self.send_data('MiniDrone', 'Animations', 'Flip', direction)
+
+    def move(self, speed, angle):
+        return self.send_data('MiniDrone', 'Piloting', 'PCMD', 3, angle)
+
+    def takeOff(self):
+        return self.send_data('MiniDrone', 'Piloting', 'TakeOff')
+
+    def landing(self):
+        return self.send_data('MiniDrone', 'Piloting', 'Landing')
+
+    def data_received(self, buf, data):
+        """
+        Save the recieved data in the state.
+
+        This function is called by the internal Network, and should not be called
+        directly by the application.
+        """
+        if buf in self._cmdBuffers:
+            dico, ok = unpack_command(data)
+            if not ok:
+                return
+
+            pr, cl, cmd = dico['proj'], dico['class'], dico['cmd']
+
+            try:
+                args = dico['args']
+                key = dico['arg0']
+            except:
+                args = {}
+                key = 'no_arg'
+
+            type = dico['listtype']
+            if type == ARCommandListType.NONE:
+                self._state.put(pr, cl, cmd, args)
+            elif type == ARCommandListType.LIST:
+                self._state.put_list(pr, cl, cmd, args)
+            elif type == ARCommandListType.MAP:
+                self._state.put_map(pr, cl, cmd, args, key)
+
+    def did_disconnect(self):
+        """
+        Called when the product is disconnected.
+
+        The application should not call this function directly.
+        """
+        print( 'Product disconnected !')
+        self.stop()
+
+    def get_state(self, copy=True):
+        """
+        Get the product state.
+
+        Arguments:
+        - copy : if True, this function will return a pure dictionnary copy of the state
+                 if False, this function will return a reference to the internal state
+                 (default True)
+
+        When requesting a non-copy state, the application should NEVER try to modify it.
+
+        To get a value from the internal state, use its 'get_value' function.
+        """
+        if copy:
+            return self._state.duplicate()
+        else:
+            return self._state
+
+    def get_battery(self):
+        """
+        Get the current battery percentage.
+        """
+        try:
+            return self._state.get_value('common.CommonState.BatteryStateChanged')['percent']
+        except:
+            return 0
+
+    def send_data(self, pr, cl, cm, *args, **kwargs):
+        """
+        Send some command to the product.
+
+        Return a NetworkStatus value.
+
+        Arguments:
+        - pr : Project name of the command
+        - cl : Class name of the command
+        - cm : Command name
+        - *args : arguments to the command
+
+        Keyword arguments:
+        - retries : number of retries (default 5)
+        - timeout : timeout (seconds) per try for acknowledgment (default 0.15)
+        """
+        try:
+            cmd, buf, to = pack_command(pr, cl, cm, *args)
+        except CommandError:
+            print( 'Bad command !')
+            return NetworkStatus.ERROR
+        bufno=-1
+        if buf == ARCommandBuffer.NON_ACK:
+            bufno = self._nackBuffer
+            datatype = Bybop_NetworkAL.DataType.DATA
+        elif buf == ARCommandBuffer.ACK:
+            bufno = self._ackBuffer
+            datatype = Bybop_NetworkAL.DataType.DATA_WITH_ACK
+        elif buf == ARCommandBuffer.HIGH_PRIO:
+            bufno = self._urgBuffer
+            datatype = Bybop_NetworkAL.DataType.DATA_LOW_LATENCY
+
+        if bufno == -1:
+            print( 'No suitable buffer')
+            return NetworkStatus.ERROR
+
+        retries = kwargs['retries'] if 'retries' in kwargs else 5
+        timeout = kwargs['timeout'] if 'timeout' in kwargs else 0.15
+
+        status = self._network.send_data(bufno, cmd, datatype, timeout=timeout, tries=retries+1)
+
+        return status
+
+    def wait_answer(self, name, timeout=5.0):
+        """
+        Wait for an answer from the product.
+
+        This function will block until the product sends the requested command, or the timeout
+        is expired.
+
+        Return True if the command was received, False if a timeout occured.
+
+        Arguments:
+        - name : The command to wait, in 'project.class.command' notation
+
+        Keyword arguments:
+        - timeout : Maximum time (floating point seconds) to wait (default 5.0)
+        """
+        status = self._state.wait_for(name, timeout=timeout)
+        return status
+
+    def _common_init_product(self):
+        self.send_data('common', 'Settings', 'AllSettings', toto=42)
+        self.wait_answer('common.SettingsState.AllSettingsChanged')
+
+        print( 'first answer correct')
+
+        self.send_data('common', 'Common', 'AllStates')
+        self.wait_answer('common.CommonState.AllStatesChanged')
+
+        print( 'second answer correct')
+
+        now = time.gmtime()
+        dateStr = time.strftime('%Y-%m-%d', now)
+        timeStr = time.strftime('T%H%M%S+0000', now)
+        self.send_data('common', 'Common', 'CurrentDate', dateStr)
+        self.send_data('common', 'Common', 'CurrentTime', timeStr)
+
+        print( 'Dates send')
+
+    def dump_state(self):
+        print( 'Internal state :')
+        self._state.dump()
+
+    def stop(self):
+        self._network.stop()
+
+
 def create_and_connect(device, d2c_port, controller_type, controller_name):
     device_id = get_device_id(device)
     ip = get_ip(device)
     port = get_port(device)
     if device_id not in (DeviceID.BEBOP_DRONE, DeviceID.JUMPING_SUMO, DeviceID.JUMPING_NIGHT, DeviceID.AIRBORNE_NIGHT):
-        print 'Unknown product ' + device_id
+        print('Unknown product ' + device_id)
         return None
 
     connection = Connection(ip, port)
     answer = connection.connect(d2c_port, controller_type, controller_name)
     if not answer:
-        print 'Unable to connect'
+        print( 'Unable to connect')
         return None
     if answer['status'] != 0:
-        print 'Connection refused'
+        print( 'Connection refused')
         return None
 
     c2d_port = answer['c2d_port']

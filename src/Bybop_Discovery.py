@@ -82,7 +82,7 @@ class Discovery(object):
             self._services[name] = info
             self._signal_change()
         else:
-            print 'Found a service witout info : ' + name + '. Stopping !'
+            print('Found a service witout info : ' + name + '. Stopping !')
             self.stop()
 
 

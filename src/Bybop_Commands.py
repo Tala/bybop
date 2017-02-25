@@ -15,13 +15,12 @@ import struct
 # beforehand, and importing this hierarchy in this module instead of reading the xml files each time.
 # pickling the _projects variable is not a good way to do this, as we would still need the class
 # descriptions found in the ARCommandsParser module, we will have to define our own!
-
-os.environ['ARSDK_PATH'] = 'D:\Repositories\Drones'
+os.environ['ARSDK_PATH'] = 'D:\Entwicklung\Code-Samples\Drones'
 
 try:
     ARSDK_PATH=os.environ['ARSDK_PATH']
 except:
-    print 'You need to export the path to the ARSDK3 in the ARSDK_PATH environment variable'
+    print( 'You need to export the path to the ARSDK3 in the ARSDK_PATH environment variable')
     sys.exit(1) # Ugly, but works
 ARCOMMANDS_PATH=os.path.join(ARSDK_PATH, 'libARCommands')
 PY_MODULES_PATH=os.path.join(ARSDK_PATH, 'ARSDKBuildUtils', 'Utils', 'Python')
@@ -37,8 +36,8 @@ _err = ''
 for proj in _projects:
     _err = _err + proj.check()
 if len (_err) > 0:
-    print 'Your XML Files contain errors:',
-    print _err
+    print( 'Your XML Files contain errors:',)
+    print( _err)
     sys.exit(1)
 
 

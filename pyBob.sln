@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "pyBob", "pyBob.pyproj", "{80AC87C6-E0A5-45DF-BC1C-24DA605FDACF}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "BLEPlayground", "BLEPlayground\BLEPlayground\BLEPlayground.pyproj", "{CD385CF3-EE25-458C-833A-E68FA71B23BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{80AC87C6-E0A5-45DF-BC1C-24DA605FDACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{80AC87C6-E0A5-45DF-BC1C-24DA605FDACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD385CF3-EE25-458C-833A-E68FA71B23BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD385CF3-EE25-458C-833A-E68FA71B23BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
