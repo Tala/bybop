@@ -316,8 +316,8 @@ class Device(object):
         """
         try:
             cmd, buf, to = pack_command(pr, cl, cm, *args)
-        except CommandError:
-            print('Bad command !')
+        except CommandError as ce:
+            print(str(ce))
             return NetworkStatus.ERROR
         bufno=-1
         if buf == ARCommandBuffer.NON_ACK:
@@ -640,8 +640,8 @@ class Airborn(object):
         """
         try:
             cmd, buf, to = pack_command(pr, cl, cm, *args)
-        except CommandError:
-            print( 'Bad command !')
+        except CommandError as ce:
+            print(str(ce))
             return NetworkStatus.ERROR
         bufno=-1
         if buf == ARCommandBuffer.NON_ACK:

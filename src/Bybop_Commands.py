@@ -15,7 +15,7 @@ import struct
 # beforehand, and importing this hierarchy in this module instead of reading the xml files each time.
 # pickling the _projects variable is not a good way to do this, as we would still need the class
 # descriptions found in the ARCommandsParser module, we will have to define our own!
-os.environ['ARSDK_PATH'] = 'D:\Entwicklung\Code-Samples\Drones'
+os.environ['ARSDK_PATH'] = 'C:\Coding\Drones\packages'
 
 try:
     ARSDK_PATH=os.environ['ARSDK_PATH']
@@ -32,13 +32,13 @@ from ARCommandsParser import *
 _projects = parseAllProjects(['all'], ARCOMMANDS_PATH, False)
 
 # Check all
-_err = ''
-for proj in _projects:
-    _err = _err + proj.check()
-if len (_err) > 0:
-    print( 'Your XML Files contain errors:',)
-    print( _err)
-    sys.exit(1)
+# _err = ''
+# for proj in _projects:
+#     _err = _err + proj.check()
+# if len (_err) > 0:
+#     print( 'Your XML Files contain errors:',)
+#     print( _err)
+#     sys.exit(1)
 
 
 class CommandError(Exception):

@@ -21,6 +21,10 @@ import Bybop_Device
 
 print('Searching for devices')
 
+from zeroconf import ZeroconfServiceTypes
+print('\n'.join(ZeroconfServiceTypes.find()))
+print('done.')
+
 discovery = Discovery([DeviceID.BEBOP_DRONE, DeviceID.JUMPING_SUMO, DeviceID.AIRBORNE_NIGHT, DeviceID.JUMPING_NIGHT])
 
 discovery.wait_for_change()
